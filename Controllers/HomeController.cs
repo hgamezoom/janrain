@@ -17,7 +17,7 @@ namespace janrain.Controllers
 
         public IActionResult Data()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewData["Message"] = "Janrain Data Transformation";
 
             return View();
         }
