@@ -142,7 +142,8 @@ namespace App
             SpecialtyDic.Add("IDPC", "传染病防制科");
 
             Console.WriteLine("type command : starttransform");
-            var cmd = Console.ReadLine();
+            //var cmd = Console.ReadLine();
+            var cmd="starttransform";
             if (cmd == "starttransform")
             {
 
@@ -167,14 +168,14 @@ namespace App
                                 var customtype=oo[3];
                                 var jobTitle=oo[4];
                                  string customtypecn;
-                                            if (AoiDic.TryGetValue(customtype, out customtypecn))
+                                            if (customtypeDic.TryGetValue(customtype, out customtypecn))
                                                 oo.Insert(4,customtypecn);
                                                 else
                                                   oo.Insert(4,"null");
 
                                 string jobtitlecn;
-                                            if (AoiDic.TryGetValue(jobTitle, out jobtitlecn))
-                                                oo.Insert(5,jobtitlecn);
+                                            if (jobtitleDic.TryGetValue(jobTitle, out jobtitlecn))
+                                                oo.Insert(6,jobtitlecn);
                                           else
                                            oo.Insert(5,"null");
 
@@ -317,6 +318,7 @@ namespace App
                         sW.WriteLine(s);
                     }
                     sW.Close();
+                    Console.WriteLine($"{newfile} completed");
                 }
             }
 
