@@ -143,41 +143,46 @@ namespace App
 
             Console.WriteLine("type command : starttransform");
             //var cmd = Console.ReadLine();
-            var cmd="starttransform";
-            if (cmd == "starttransform")
+
+            Console.WriteLine("starting...");
+
+            var filePath = $"{Directory.GetCurrentDirectory()}\\origin";
+            var outputPath = $"{Directory.GetCurrentDirectory()}\\transformed";
+            var ff = Directory.GetFiles(filePath);
+            if(ff.Count()<=0)
+            {
+                Console.WriteLine("origin folder no files!");
+                return;
+            }
+            foreach (var f in ff)
             {
 
-                Console.WriteLine("starting...");
-
-                var filePath = $"{Directory.GetCurrentDirectory()}\\origin";
-                var outputPath = $"{Directory.GetCurrentDirectory()}\\transformed";
-                var ff = Directory.GetFiles(filePath);
-                foreach (var f in ff)
+                var newstring = new List<string>();
+                newstring.Add("givenName|familyName|email|customerType|customTypeCN|jobTitle|jobTitleCN|organizationName|organizationCode|addressLine1|province|district|city|uuid|customerId|validationStatus|brandedConsent|msdCorporateInfoStatus|msdClinicalInfoStatus|msdProductInfoStatus|mainSpecialty|aoi1|aoi2|aoi3|specialty1|specialty2|specialty3|specialty4|specialty5|specialty6|specialty7|specialty8|specialty9|aoi1cn|aoi2cn|aoi3cn|specialty1cn|specialty2cn|specialty3cn|specialty4cn|specialty5cn|specialty6cn|specialty7cn|specialty8cn|specialty9cn");
+                FileStream fileStream = new FileStream(f, FileMode.Open);
+                using (StreamReader reader = new StreamReader(fileStream))
                 {
-                    var newstring = new List<string>();
-                    newstring.Add("givenName|familyName|email|customerType|customTypeCN|jobTitle|jobTitleCN|organizationName|organizationCode|addressLine1|province|district|city|uuid|customerId|validationStatus|brandedConsent|msdCorporateInfoStatus|msdClinicalInfoStatus|msdProductInfoStatus|mainSpecialty|aoi1|aoi2|aoi3|specialty1|specialty2|specialty3|specialty4|specialty5|specialty6|specialty7|specialty8|specialty9|aoi1cn|aoi2cn|aoi3cn|specialty1cn|specialty2cn|specialty3cn|specialty4cn|specialty5cn|specialty6cn|specialty7cn|specialty8cn|specialty9cn");
-                    FileStream fileStream = new FileStream(f, FileMode.Open);
-                    using (StreamReader reader = new StreamReader(fileStream))
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
                     {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
+                        try
                         {
                             if (!line.StartsWith("givenName"))
                             {
                                 var oo = line.Split("|").ToList();
-                                var customtype=oo[3];
-                                var jobTitle=oo[4];
-                                 string customtypecn;
-                                            if (customtypeDic.TryGetValue(customtype, out customtypecn))
-                                                oo.Insert(4,customtypecn);
-                                                else
-                                                  oo.Insert(4,"null");
+                                var customtype = oo[3];
+                                var jobTitle = oo[4];
+                                string customtypecn;
+                                if (customtypeDic.TryGetValue(customtype, out customtypecn))
+                                    oo.Insert(4, customtypecn);
+                                else
+                                    oo.Insert(4, "null");
 
                                 string jobtitlecn;
-                                            if (jobtitleDic.TryGetValue(jobTitle, out jobtitlecn))
-                                                oo.Insert(6,jobtitlecn);
-                                          else
-                                           oo.Insert(5,"null");
+                                if (jobtitleDic.TryGetValue(jobTitle, out jobtitlecn))
+                                    oo.Insert(6, jobtitlecn);
+                                else
+                                    oo.Insert(5, "null");
 
                                 var last = oo.Last();
                                 if (String.IsNullOrEmpty(last) || last == "[]")
@@ -304,23 +309,32 @@ namespace App
 
                                 }
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(line);
+                            throw ex;
 
                         }
-
-
                     }
-                    var oldfile = new FileInfo(f);
-                    var newfile = oldfile.Name.Split(".")[0] + "_out";
-                    FileInfo myFile = new FileInfo($"{outputPath}\\{newfile}.csv");
-                    StreamWriter sW = myFile.CreateText();
-                    foreach (var s in newstring.ToArray())
-                    {
-                        sW.WriteLine(s);
-                    }
-                    sW.Close();
-                    Console.WriteLine($"{newfile} completed");
+
                 }
+                var oldfile = new FileInfo(f);
+                var newfile = oldfile.Name.Split(".")[0] + "_out";
+                FileInfo myFile = new FileInfo($"{outputPath}\\{newfile}.csv");
+                StreamWriter sW = myFile.CreateText();
+                foreach (var s in newstring.ToArray())
+                {
+                    sW.WriteLine(s);
+                }
+                sW.Close();
+                Console.WriteLine($"{newfile} completed");
+
+
+
             }
+
+
 
 
         }
