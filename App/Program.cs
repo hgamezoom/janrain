@@ -155,7 +155,7 @@ namespace App
                 foreach (var f in ff)
                 {
                     var newstring = new List<string>();
-                    newstring.Add("givenName|familyName|email|customerType|customTypeCN|jobTitle|jobTitleCN|organizationName|organizationCode|addressLine1|province|district|city|uuid|customerId|validationStatus|brandedConsent|msdCorporateInfoStatus|msdClinicalInfoStatus|msdProductInfoStatus|mainSpecialty|aoi1|aoi2|aoi3|specialty1|specialty2|specialty3|specialty4|specialty5|specialty6|specialty7|specialty8|specialty9|aoi1cn|aoi2cn|aoi3cn|specialty1cn|specialty2cn|specialty3cn|specialty4cn|specialty5cn|specialty6cn|specialty7cn|specialty8cn|specialty9cn");
+                    newstring.Add("givenName|familyName|email|customerType|customTypeCN|jobTitle|jobTitleCN|organizationName|organizationCode|addressLine1|province|district|city|uuid|customerId|validationStatus|brandedConsent|msdCorporateInfoStatus|msdClinicalInfoStatus|msdProductInfoStatus|mainSpecialty|aoi1|aoi2|aoi3|aoispecialty1|aoispecialty2|aoispecialty3|aoi1cn|aoi2cn|aoi3cn|aoispecialty1cn|aoispecialty2cn|aoispecialty3cn");
                     FileStream fileStream = new FileStream(f, FileMode.Open);
                     using (StreamReader reader = new StreamReader(fileStream))
                     {
@@ -183,22 +183,22 @@ namespace App
                                 if (String.IsNullOrEmpty(last) || last == "[]")
                                 {
                                     //no aoi
-                                    var tempstring = String.Join("|", oo.SkipLast(1)) + "|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null|null";
+                                    var tempstring = String.Join("|", oo.SkipLast(1)) + "|null|null|null|null|null|null|null|null|null|null|null|null";
                                     newstring.Add(tempstring);
 
                                 }
                                 else
                                 {
                                     //has aoi
-                                    var aoijson = JsonConvert.DeserializeObject(last) as JArray;
+                                    var aoijson = (JsonConvert.DeserializeObject(last) as JArray).Take(3).ToArray();
                                     if (aoijson != null)
                                     {
                                         string[] aois = new string[3] { "null", "null", "null" };
-                                        string[] specialties = new string[9] { "null", "null", "null", "null", "null", "null", "null", "null", "null" };
+                                        string[] specialties = new string[3] { "null", "null", "null"};
                                         string[] aoiscn = new string[3] { "null", "null", "null" };
-                                        string[] specialtiescn = new string[9] { "null", "null", "null", "null", "null", "null", "null", "null", "null" };
+                                        string[] specialtiescn = new string[3] { "null", "null", "null"};
 
-                                        for (int i = 0; i < aoijson.Count; i++)
+                                        for (int i = 0; i < aoijson.Count(); i++)
                                         {
                                             aois[i] = aoijson[i]["aoi"].ToString();
                                             string aoicn;
@@ -209,81 +209,50 @@ namespace App
                                             {
                                                 if (i == 0)
                                                 {
-                                                    specialties[0] = spes[0];
-                                                    if (specialties[0] != "null")
+                                                    for(int k=0;k<3;k++)
                                                     {
-                                                        string spcn;
-                                                        if (SpecialtyDic.TryGetValue(specialties[0], out spcn))
-                                                            specialtiescn[0] = spcn;
-                                                    }
 
-                                                    specialties[1] = spes.Length > 1 ? spes[1] : "null";
-                                                    if (specialties[1] != "null")
+                                                   specialties[k] = spes.Length > k ? spes[k] : "null";
+                                                    if (specialties[k] != "null")
                                                     {
                                                         string spcn;
-                                                        if (SpecialtyDic.TryGetValue(specialties[1], out spcn))
-                                                            specialtiescn[1] = spcn;
+                                                        if (SpecialtyDic.TryGetValue(specialties[k], out spcn))
+                                                            specialtiescn[k] = spcn;
                                                     }
-
-                                                    specialties[2] = spes.Length > 2 ? spes[2] : "null";
-                                                    if (specialties[2] != "null")
-                                                    {
-                                                        string spcn;
-                                                        if (SpecialtyDic.TryGetValue(specialties[2], out spcn))
-                                                            specialtiescn[2] = spcn;
                                                     }
+                                                   
                                                 }
                                                 else if (i == 1)
                                                 {
-                                                    specialties[3] = spes[0];
-                                                    if (specialties[3] != "null")
+                                                     for(int k=3;k<6;k++)
+                                                    {
+
+                                                   specialties[k] = spes.Length > k-3 ? spes[k-3] : "null";
+                                                    if (specialties[k] != "null")
                                                     {
                                                         string spcn;
-                                                        if (SpecialtyDic.TryGetValue(specialties[3], out spcn))
-                                                            specialtiescn[3] = spcn;
+                                                        if (SpecialtyDic.TryGetValue(specialties[k], out spcn))
+                                                            specialtiescn[k] = spcn;
+                                                    }
                                                     }
 
-                                                    specialties[4] = spes.Length > 1 ? spes[1] : "null";
-                                                    if (specialties[4] != "null")
-                                                    {
-                                                        string spcn;
-                                                        if (SpecialtyDic.TryGetValue(specialties[4], out spcn))
-                                                            specialtiescn[4] = spcn;
-                                                    }
-
-                                                    specialties[5] = spes.Length > 2 ? spes[2] : "null";
-                                                    if (specialties[5] != "null")
-                                                    {
-                                                        string spcn;
-                                                        if (SpecialtyDic.TryGetValue(specialties[5], out spcn))
-                                                            specialtiescn[5] = spcn;
-                                                    }
+                                                  
                                                 }
                                                 else if (i == 2)
                                                 {
-                                                    specialties[6] = spes[0];
-                                                    if (specialties[6] != "null")
+
+                                                    for(int k=6;k<9;k++)
+                                                    {
+
+                                                   specialties[k] = spes.Length > k-6? spes[k-6] : "null";
+                                                    if (specialties[k] != "null")
                                                     {
                                                         string spcn;
-                                                        if (SpecialtyDic.TryGetValue(specialties[6], out spcn))
-                                                            specialtiescn[6] = spcn;
+                                                        if (SpecialtyDic.TryGetValue(specialties[k], out spcn))
+                                                            specialtiescn[k] = spcn;
+                                                    }
                                                     }
 
-                                                    specialties[7] = spes.Length > 1 ? spes[1] : "null";
-                                                    if (specialties[7] != "null")
-                                                    {
-                                                        string spcn;
-                                                        if (SpecialtyDic.TryGetValue(specialties[7], out spcn))
-                                                            specialtiescn[7] = spcn;
-                                                    }
-
-                                                    specialties[8] = spes.Length > 2 ? spes[2] : "null";
-                                                    if (specialties[8] != "null")
-                                                    {
-                                                        string spcn;
-                                                        if (SpecialtyDic.TryGetValue(specialties[8], out spcn))
-                                                            specialtiescn[8] = spcn;
-                                                    }
                                                 }
                                             }
 
