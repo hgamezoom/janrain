@@ -155,7 +155,7 @@ namespace App
                 foreach (var f in ff)
                 {
                     var newstring = new List<string>();
-                    newstring.Add("givenName|familyName|email|customerType|customTypeCN|jobTitle|jobTitleCN|organizationName|organizationCode|addressLine1|province|district|city|uuid|customerId|validationStatus|brandedConsent|msdCorporateInfoStatus|msdClinicalInfoStatus|msdProductInfoStatus|mainSpecialty|aoi1|aoi2|aoi3|aoispecialty1|aoispecialty2|aoispecialty3|aoi1cn|aoi2cn|aoi3cn|aoispecialty1cn|aoispecialty2cn|aoispecialty3cn");
+                    newstring.Add("givenName|familyName|email|customerType|customTypeCN|jobTitle|jobTitleCN|organizationName|organizationCode|addressLine1|province|district|city|uuid|customerId|validationStatus|brandedConsent|msdCorporateInfoStatus|msdClinicalInfoStatus|msdProductInfoStatus|mainSpecialty|mainSpecialtycn|aoi1|aoi2|aoi3|aoispecialty1|aoispecialty2|aoispecialty3|aoi1cn|aoi2cn|aoi3cn|aoispecialty1cn|aoispecialty2cn|aoispecialty3cn");
                     FileStream fileStream = new FileStream(f, FileMode.Open);
                     using (StreamReader reader = new StreamReader(fileStream))
                     {
@@ -167,6 +167,7 @@ namespace App
                                 var oo = line.Split("|").ToList();
                                 var customtype=oo[3];
                                 var jobTitle=oo[4];
+                                var mainsp=oo[18];
                                  string customtypecn;
                                             if (customtypeDic.TryGetValue(customtype, out customtypecn))
                                                 oo.Insert(4,customtypecn);
@@ -178,6 +179,14 @@ namespace App
                                                 oo.Insert(6,jobtitlecn);
                                           else
                                            oo.Insert(6,"null");
+
+                                           
+                                string mainspcn;
+                                            if (SpecialtyDic.TryGetValue(mainsp, out mainspcn))
+                                                oo.Insert(21,mainspcn);
+                                          else
+                                           oo.Insert(21,"null");
+
 
                                 var last = oo.Last();
                                 if (String.IsNullOrEmpty(last) || last == "[]")
@@ -198,7 +207,7 @@ namespace App
                                         string[] aoiscn = new string[3] { "null", "null", "null" };
                                         string[] specialtiescn = new string[3] { "null", "null", "null"};
 
-                                        for (int i = 0; i < 3; i++)
+                                        for (int i = 0; i < (aoijson.Count>3?3:aoijson.Count); i++)
                                         {
                                             aois[i] = aoijson[i]["aoi"].ToString();
                                             string aoicn;
