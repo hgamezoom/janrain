@@ -155,7 +155,7 @@ namespace App
                 foreach (var f in ff)
                 {
                     var newstring = new List<string>();
-                    newstring.Add("givenName|familyName|email|customerType|customTypeCN|jobTitle|jobTitleCN|organizationName|organizationCode|addressLine1|province|district|city|uuid|customerId|validationStatus|brandedConsent|msdCorporateInfoStatus|msdClinicalInfoStatus|msdProductInfoStatus|mainSpecialty|mainSpecialtycn|aoi1|aoi2|aoi3|aoispecialty1|aoispecialty2|aoispecialty3|aoi1cn|aoi2cn|aoi3cn|aoispecialty1cn|aoispecialty2cn|aoispecialty3cn");
+                    newstring.Add("givenName|familyName|email|customerType|customTypeCN|jobTitle|jobTitleCN|organizationName|organizationCode|addressLine1|province|district|city|uuid|customerId|validationStatus|brandedConsent|msdCorporateInfoStatus|msdClinicalInfoStatus|msdProductInfoStatus|mainSpecialty|mainSpecialtycn|aoi1|aoi2|aoi3|aoispecialty1|aoispecialty2|aoispecialty3|aoi1cn|aoi2cn|aoi3cn|aoispecialty1cn|aoispecialty2cn|aoispecialty3cn|aoispecialtyall|aoispecialtyallcn");
                     FileStream fileStream = new FileStream(f, FileMode.Open);
                     using (StreamReader reader = new StreamReader(fileStream))
                     {
@@ -192,7 +192,7 @@ namespace App
                                 if (String.IsNullOrEmpty(last) || last == "[]")
                                 {
                                     //no aoi
-                                    var tempstring = String.Join("|", oo.SkipLast(1)) + "|null|null|null|null|null|null|null|null|null|null|null|null";
+                                    var tempstring = String.Join("|", oo.SkipLast(1)) + "|null|null|null|null|null|null|null|null|null|null|null|null|null|null";
                                     newstring.Add(tempstring);
 
                                 }
@@ -206,7 +206,7 @@ namespace App
                                         string[] specialties = new string[3] { "null", "null", "null"};
                                         string[] aoiscn = new string[3] { "null", "null", "null" };
                                         string[] specialtiescn = new string[3] { "null", "null", "null"};
-
+                                        
                                         for (int i = 0; i < (aoijson.Count>3?3:aoijson.Count); i++)
                                         {
                                             aois[i] = aoijson[i]["aoi"].ToString();
@@ -219,24 +219,26 @@ namespace App
                                             foreach(var sp in specialties[i].Split(","))
                                             {
                                                 //find specialty cn
-                                            
+                                                 
                                                   string spcn;
                                                         if (SpecialtyDic.TryGetValue(sp, out spcn))
                                                   cnlist.Add(spcn);
 
                                             }
+                                            if(cnlist.Count>0)
                                             specialtiescn[i]=String.Join(",",cnlist);
                                            
                                         }
+                                        var specialtyall=String.Join(",",specialties);
+                                        var specialtyallcn=String.Join(",",specialtiescn);
 
-
-                                        var aoistring = $"|{aois[0]}|{aois[1]}|{aois[2]}|{specialties[0]}|{specialties[1]}|{specialties[2]}|{aoiscn[0]}|{aoiscn[1]}|{aoiscn[2]}|{specialtiescn[0]}|{specialtiescn[1]}|{specialtiescn[2]}";
+                                        var aoistring = $"|{aois[0]}|{aois[1]}|{aois[2]}|{specialties[0]}|{specialties[1]}|{specialties[2]}|{aoiscn[0]}|{aoiscn[1]}|{aoiscn[2]}|{specialtiescn[0]}|{specialtiescn[1]}|{specialtiescn[2]}|{specialtyall}|{specialtyallcn}";
                                         var tempstring = String.Join("|", oo.SkipLast(1)) + aoistring;
                                         newstring.Add(tempstring);
                                     }
                                     else
                                     {
-                                        var tempstring = String.Join("|", oo.SkipLast(1)) + "|null|null|null|null|null|null|null|null|null|null|null|null";
+                                        var tempstring = String.Join("|", oo.SkipLast(1)) + "|null|null|null|null|null|null|null|null|null|null|null|null|null|null";
                                         newstring.Add(tempstring);
 
                                     }
